@@ -8,3 +8,6 @@ Other packages are easily installable using pip.
 sample input/output pair is generated and kept in folders input and output
 command used was 
 python3 toImage.py input output
+
+
+**Just run python3 toImage.py to get instruction while using tool**
