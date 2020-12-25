@@ -1,6 +1,8 @@
+import argparse
+import json
 import os
 import sys
-import json
+
 from pdf2image import convert_from_path
 
 
@@ -41,20 +43,16 @@ def convert_pdfs_to_images(ip_dir, op_dir):
 
 if __name__ == '__main__':
 
-    try:
-        if sys.argv[1] == "-h" or sys.argv[1] == '-help':
-            raise Exception()
-        ip_dir = sys.argv[1]
-        op_dir = sys.argv[2]
-        status = convert_pdfs_to_images(ip_dir, op_dir)
-        print("completed : ")
-        print(json.dumps(status, indent=2))
+    parser = argparse.ArgumentParser(
+        description="Convert a directory of pdfs into images.")
+    parser.add_argument('input_dir', type=str,
+                        help="Relative path to the input directory which contains the pdfs.")
+    parser.add_argument('output_dir', type=str,
+                        help="Relative path to the output directory to store the images.")
 
-    except:
-        print("Usage :")
-        print("python/python3 toImage.py <input_dir_path> <output_dir_path>")
-        print("pre-requisite :")
-        print("sudo apt install poppler-utils")
-        print("pip/pip3 install pdf2image")
-        # print("error : ")
-        # print(sys.exc_info())
+    args = parser.parse_args()
+    ip_dir = args.input_dir
+    op_dir = args.output_dir
+    status = convert_pdfs_to_images(ip_dir, op_dir)
+    print("completed : ")
+    print(json.dumps(status, indent=2))
