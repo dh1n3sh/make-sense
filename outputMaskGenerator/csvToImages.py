@@ -6,8 +6,8 @@ import os
 destination = './output/'
 if not os.path.exists(destination): 
     os.makedirs(destination) 
-if not os.path.exists ('./reference'): 
-    os.makedirs ('./reference') 
+# if not os.path.exists ('./reference'): 
+#     os.makedirs ('./reference') 
 
 imageBoxes = dict()
 imageSize = dict()  
@@ -44,11 +44,26 @@ for key,value in imageBoxes.items() :
     imh, imw = dim[1], dim[0]
 
     #Modify masks 
-    blank_image = np.zeros((imh, imw, 4)) #For each label 
-    blank_image[:, :] = (0, 100, 0, 0) 
+    # blank_image = np.zeros((imh, imw, 4)) #For each label 
+    # blank_image[:, :] = (0, 100, 0, 0) 
 
     reference_image = np.zeros ((imh, imw, 3))  
-    reference_image[:, :] = (0,0,0)    
+
+    labelToIndex = { 
+        "Answer number": 0, "Candidate details ":1, "Para":2, "Bullets":3, "Table":4, "Figure":5, "Mathematical":6, "None":7
+    } 
+    colourCombination = [
+        (255,0,0), (0,255,0), (0,0,255), (255,255,0), (0,255,255), (255,0,255), (128,128,128), (0,0,0)
+    ] 
+
+    #Answer number: Red  
+    #Candidate details: Lime
+    #Para: Blue
+    #Bullets: Yellow 
+    #Table: Cyan
+    #Figures: Magenta
+    #Mathematical: Gray
+    #None: Black  
 
     for box in value:  
         
@@ -57,22 +72,12 @@ for key,value in imageBoxes.items() :
         len,bred = box[4],box[3] 
 
         # print (box) 
+        # blank_image[topLeftX:topLeftX+len, topLeftY:topLeftY+bred] = (100, 0, 0, 0)
+        # print (label) 
 
-        if (label == "question identifier"): 
-            blank_image[topLeftX:topLeftX+len, topLeftY:topLeftY+bred] = (100, 0, 0, 0)
-            reference_image[topLeftX:topLeftX+len, topLeftY:topLeftY+bred] = (255, 0, 0)  #RED
+        x = colourCombination[labelToIndex[label]]
+        #HOW is it BGR?  
+        reference_image[topLeftX:topLeftX+len, topLeftY:topLeftY+bred] = (x[2], x[1], x[0]) #colourCombination[labelToIndex[label]] 
 
-        # elif (label == "answer"):  
-        #     blank_image[topLeftX:topLeftX+len, topLeftY:topLeftY+bred] = (0, 255, 0, 0)
-        #     reference_image[topLeftX:topLeftX+len, topLeftY:topLeftY+bred] = (0, 255, 0) 
- 
-        elif (label == "bullet"): 
-            reference_image[topLeftX:topLeftX+len, topLeftY:topLeftY+bred] = (0, 0, 255) #BLUE 
-            blank_image[topLeftX:topLeftX+len, topLeftY:topLeftY+bred] = (0, 0, 100, 0)
-
-        else:
-            blank_image[topLeftX:topLeftX+len, topLeftY:topLeftY+bred] = (0, 0, 0, 100)  
-            reference_image[topLeftX:topLeftX+len, topLeftY:topLeftY+bred] = (0, 255, 0) #BLACK
-    
-    cv2.imwrite('./reference/' + key, reference_image)
-    cv2.imwrite(destination + key, blank_image) 
+    cv2.imwrite(destination + key, reference_image)
+    # cv2.imwrite(destination + key, blank_image) 
